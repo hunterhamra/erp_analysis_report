@@ -1,0 +1,199 @@
+---
+title: "ERP analysis report (customise title to fit your topic)"
+author: "Your name"
+date: today
+format: 
+    html:
+        embed-resources: true
+        toc: true
+        toc-depth: 3
+        code-fold: true
+        theme: flatly # adapt this to a theme of your choice if you'd like
+execute:
+    warning: false
+    message: false
+bibliography: "erp_report.bib"
+---
+
+## Setup
+
+```{python}
+# Specify the required imports for your analysis
+from pathlib import Path
+
+from mini_mne import SimpleRaw, SimpleEpoch, grand_average, plot_evokeds
+
+# Note how we can import a custom preprocessing function from a local script
+from scripts.preproc import preprocess
+
+```
+
+```{python}
+# Specify the required paths for your analysis
+# Note that we now include a folder for saving preprocessed data
+RAW_PATH = Path("data/raw")
+PROCESSED_PATH = Path("data/processed")
+```
+
+## Introduction
+
+Provide an introduction to the ERP component of your choice here. This should include a brief literature review -- see report instructions for details.
+Use appropriate subheadings as required: adapt the ones below, create new ones or delete as needed.
+
+### Intro subheading 1
+
+### Intro subheading 2
+
+## Methods
+
+Complete the following subsections using the information from @kappenman2021. Don't forget to mention that the data are from the ERP CORE resource under a Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0). 
+
+### Participants
+
+Provide information on the number of participants and their demographics (sex, age, handedness) as well as the inclusion criteria for the study.
+
+### Procedure
+
+Describe the task that participants completed. This should be tailored to the task / component that you chose to analyse.
+
+### EEG recording
+
+Describe the EEG recording parameters: amplifier and type of cap used, electrode positions, CMS / DRL electrode positions, EOG electrode positions, and filter parameters.
+
+### Analysis parameters
+
+Choose these parameters appropriate for the component that you are analysing. Use those recommended by @kappenman2021; see their Table 1. This holds for all parameters except for the filter parameters; for these, you can stick to the example parameters provided below.
+Describe the parameters in this section and also modify the code accordingly
+
+#### Preprocessing parameters
+
+```{python}
+
+FILTER_SETTINGS = {
+    "low_cutoff": 0.1,
+    "high_cutoff": 30.0
+}
+
+# This setting re-references to averaged mastoids (P9/P10 as proxy) 
+# To use an average reference, replace ["P9", "P10"] with None 
+REFERENCE = ["P9","P10"]
+
+```
+
+#### Epoching parameters
+
+```{python}
+TMIN = -0.2 # epoch start relative to critical event
+TMAX = 1.0  # epoch end relative to critical event
+
+BASELINE = (-0.2,0) # baseline interval
+
+# critical conditions for averaging and epoching
+CONDITIONS = ["stimulus/compatible", "stimulus/incompatible"]
+
+REJECT = {
+    "eeg": 150e-6,
+    "eog": 250e-6
+}
+
+```
+
+## Data analysis
+
+### Preprocessing
+
+```{python}
+#| eval: true # set this to false if you don't want preprocessing to recompute
+#| output: false # this suppresses any output
+
+for raw_file in RAW_PATH.glob("*_raw.fif.gz"):
+
+    # extract subject number
+    subj_ID = raw_file.stem.split("_")[0]
+
+    # read in raw file 
+    raw = SimpleRaw(raw_file)
+
+    # preprocess raw file
+    # note how we draw on a custom preprocessing function here
+    processed = preprocess(raw, 
+                            reref_params = REFERENCE, 
+                            filter_low_cutoff = FILTER_SETTINGS["low_cutoff"], 
+                            filter_high_cutoff = FILTER_SETTINGS["high_cutoff"])
+    
+    processed.save(PROCESSED_PATH / f"{subj_ID}_raw.fif.gz", overwrite = True)
+
+
+```
+
+### Epoching and averaging
+
+```{python}
+#| output: false
+
+# initialise empty dictionary to hold single-subject averages
+ss_avs = {}
+
+for cond in CONDITIONS:
+    ss_avs[cond] = []
+
+for processed_file in PROCESSED_PATH.glob("*_raw.fif.gz"):
+    
+    # read in preprocessed file
+    processed = SimpleRaw(processed_file)
+
+    # extract events
+    events, event_id = processed.get_events()
+
+    # epoch data
+    epochs = SimpleEpoch(processed, events, event_id, tmin = TMIN, tmax = TMAX, baseline = BASELINE, reject = REJECT)
+
+    # subset epochs and average by condition 
+    for cond in CONDITIONS:
+        av = epochs[cond].average()
+        ss_avs[cond].append(av)
+
+```
+
+### Grand average
+
+```{python}
+#| output: false
+
+# create an empty dict to hold our grand averages
+grand_avs = {}
+
+for cond in CONDITIONS:
+    grand = grand_average(ss_avs[cond])
+    grand_avs[cond] = grand
+```
+
+## Results
+
+### Grand average: expected effect
+
+Plot the electrode deemed most representative for the effect by @kappenman2021.
+Set the parameters for the specified analysis window, which will include dotted vertical lines marking the analysis window on the plot.
+Note: for some components, @kappenman2021 refer to two electrode sites. If this is the case for your chosen component, the analysis requires a consideration of lateralisation; please make an appointment to discuss the required analysis tweaks with Ina.
+
+```{python}
+selected_electrode = "FCz"
+plot_title = "Grand average for N2: Incompatible versus compatible Flanker stimuli"
+analysis_window_start = 0.2
+analysis_window_end = 0.4
+
+plot_evokeds(grand_avs, picks = selected_electrode, invert_y = True, title = plot_title, vlines = [analysis_window_start, analysis_window_end])
+
+
+```
+
+## Discussion and reflection
+
+Provide a brief discussion of the effect that you observed. Were you able to replicate the ERP component as observed by @kappenman2021? If not, what was different in your grand average ERP? 
+
+What did you learn by applying the analysis process to a new dataset?
+
+## References
+
+*Note: this document is set up to automatically generate a reference list via a bib file. We will look at how to do this in the week 9 workshop.*
+

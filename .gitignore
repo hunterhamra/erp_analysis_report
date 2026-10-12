@@ -1,0 +1,16 @@
+# OS-specific files
+.DS_Store
+
+# Data files
+data/
+*.fif
+*.fif.gz
+
+# Output files
+*.html
+*.png
+
+# Other files to ignore
+*.docx
+*.xlsx
+*.pdf
