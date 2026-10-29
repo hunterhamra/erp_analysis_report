@@ -1,6 +1,6 @@
 ---
-title: "ERP analysis report (customise title to fit your topic)"
-author: "Your name"
+title: "N2pc ERP Analysis Report"
+author: "Hunter Hamra"
 date: today
 format: 
     html:
@@ -31,39 +31,48 @@ from scripts.preproc import preprocess
 ```{python}
 # Specify the required paths for your analysis
 # Note that we now include a folder for saving preprocessed data
-RAW_PATH = Path("data/raw")
-PROCESSED_PATH = Path("data/processed")
+RAW_PATH = Path("data/raw/raw/N2pc")
+PROCESSED_PATH = Path("data/processed/n2pc")
+
+PROCESSED_PATH.mkdir(parents=True, exist_ok=True)
 ```
 
 ## Introduction
+Visual environments contain more information than people can process in detail, making selective attention essential for identifying relevant objects among competing distractions. Event-related potentials (ERPs) allow researchers to examine the timing of these attentional processes. The N2pc is a posterior, contralateral ERP component associated with the selection of visual information. It typically appears approximately 200–300 milliseconds after a search display, with a more negative voltage over posterior electrodes contralateral to an attended object than over corresponding ipsilateral electrodes. For example, attending to a target in the left visual field produces greater negativity over the right posterior scalp. In ERP CORE, the component is measured at PO7 and PO8, with a recommended measurement window of 200–275 milliseconds (Kappenman et al., 2021).
 
-Provide an introduction to the ERP component of your choice here. This should include a brief literature review -- see report instructions for details.
-Use appropriate subheadings as required: adapt the ones below, create new ones or delete as needed.
+The N2pc emerged from Luck and Hillyard’s (1990) investigations of parallel and serial processing during visual search and was explicitly characterised in their subsequent research (Luck & Hillyard, 1994a). Their experiments examined how participants detected targets within arrays containing competing items. A posterior negativity was larger contralateral to the target, providing electrophysiological evidence that processing differed according to the location of relevant visual information. These findings helped establish the N2pc as a measure of spatially selective attention.
 
-### Intro subheading 1
+The component is commonly elicited during visual-search tasks requiring participants to locate and discriminate a target among distractors. However, its occurrence depends on the demands of selection. Luck and Hillyard (1994b) observed the N2pc when targets appeared among competing distractors, but found that it was eliminated when distractors were removed or all items became relevant. They interpreted this pattern as evidence for attentional filtering that reduces interference from surrounding information. Consequently, the N2pc provides information about selective processing beyond the presence of a visual stimulus alone.
 
-### Intro subheading 2
+An important debate concerns whether the N2pc primarily reflects target selection, distractor suppression, or overlapping contributions from both processes. Although early interpretations emphasised filtering, Hickey et al. (2009) experimentally separated activity associated with targets and distractors. They identified a target-related negativity, termed Nₜ, and a distractor-related positivity, termed Pᴅ. Their findings suggested that the conventional N2pc can contain contributions from both processes, depending on the spatial arrangement of the display. This complicates the interpretation of the component as a direct measure of a single attentional mechanism. A larger N2pc therefore does not, by itself, establish that distractors were more strongly suppressed.
+
+The present report examines the N2pc using the ERP CORE visual-search dataset. Participants searched for a square in a designated colour and indicated whether its gap appeared at the top or bottom (Kappenman et al., 2021). This task required selection of the relevant object before discrimination of its defining detail. By comparing contralateral and ipsilateral responses at PO7 and PO8, the analysis assesses whether the grand-average waveform shows the expected posterior contralateral negativity during the recommended measurement window. The analysis therefore examines whether the characteristic N2pc pattern can be reproduced using the course-provided dataset and processing workflow.
+
 
 ## Methods
 
-Complete the following subsections using the information from @kappenman2021. Don't forget to mention that the data are from the ERP CORE resource under a Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0). 
-
 ### Participants
 
-Provide information on the number of participants and their demographics (sex, age, handedness) as well as the inclusion criteria for the study.
+The data were obtained from the ERP CORE resource (Kappenman et al., 2021), available under a Creative Commons Attribution-ShareAlike 4.0 International licence (CC BY-SA 4.0). The original study recruited 40 participants from the University of California, Davis community, comprising 25 females and 15 males. Participants were aged 18–30 years (M = 21.5, SD = 2.87), and 38 were right-handed. All participants had native English competence, normal colour perception, normal or corrected-to-normal vision, and no self-reported history of neurological injury or disease. Participants provided informed consent and received monetary compensation of US$10 per hour. The study was approved by the Institutional Review Board at the University of California, Davis.
+
+In the original study, participants were excluded separately for each task if artifacts affected more than 25% of trials, behavioural accuracy was below 75%, or fewer than 50% of trials remained in any experimental condition. Following these exclusions, the original N2pc analysis included 35 participants (Kappenman et al., 2021).
 
 ### Procedure
 
-Describe the task that participants completed. This should be tailored to the task / component that you chose to analyse.
+The N2pc was elicited using a visual-search task in which participants selected a target according to its colour. At the beginning of each block, either pink or blue was designated as the target colour. On each trial, participants located the square matching that colour and indicated whether its gap appeared at the top or bottom (Kappenman et al., 2021). The task therefore required participants to select the relevant square and discriminate a feature within it.
+
+For the N2pc analysis, electrode responses are classified relative to the target’s location in the left or right visual field. Contralateral responses are recorded over the hemisphere opposite the target, whereas ipsilateral responses are recorded over the hemisphere on the same side. Comparing these responses allows the lateralised activity associated with target selection to be examined.
 
 ### EEG recording
 
-Describe the EEG recording parameters: amplifier and type of cap used, electrode positions, CMS / DRL electrode positions, EOG electrode positions, and filter parameters.
+In the original study, continuous EEG was recorded using a BioSemi ActiveTwo system with active electrodes mounted in an elastic cap. Thirty scalp electrodes were positioned according to the International 10/20 System: FP1, F3, F7, FC3, C3, C5, P3, P7, P9, PO7, PO3, O1, Oz, Pz, CPz, FP2, Fz, F4, F8, FC4, FCz, Cz, C4, C6, P4, P8, P10, PO8, PO4 and O2. The common mode sense (CMS) electrode was positioned at PO1, and the driven right leg (DRL) electrode at PO2. Horizontal electrooculogram (HEOG) activity was recorded using electrodes placed lateral to the outer canthus of each eye. An additional electrode below the right eye recorded vertical electrooculogram (VEOG) activity.
 
-### Analysis parameters
+During acquisition, signals were low-pass filtered using a fifth-order sinc filter with a half-power cutoff of 204.8 Hz and digitised at 1024 Hz with 24-bit resolution. Signals were recorded in single-ended mode, with referencing performed offline (Kappenman et al., 2021).
 
-Choose these parameters appropriate for the component that you are analysing. Use those recommended by @kappenman2021; see their Table 1. This holds for all parameters except for the filter parameters; for these, you can stick to the example parameters provided below.
-Describe the parameters in this section and also modify the code accordingly
+## Analysis parameters
+
+### Preprocessing parameters
+EEG data were processed in Python using the mini_mne package and the supplied preprocessing function. Signals were re-referenced to the average of P9 and P10, which served as proxies for the mastoid electrodes. A bandpass filter with cutoff frequencies of 0.1 and 30 Hz was applied, retaining the filter settings supplied in the report template.
 
 #### Preprocessing parameters
 
@@ -80,16 +89,30 @@ REFERENCE = ["P9","P10"]
 
 ```
 
-#### Epoching parameters
+### Epoching and N2pc analysis parameters
 
+Data were segmented into stimulus-locked epochs extending from 200 ms before to 800 ms after visual-search display onset. Baseline correction used the mean voltage during the −200 to 0 ms prestimulus interval. Epoch rejection thresholds were set to 150 µV for EEG channels and 250 µV for EOG channels.
+
+The N2pc was examined using responses recorded at PO7 and PO8, classified relative to the target’s location. For targets in the left visual field, PO8 provided the contralateral response and PO7 the ipsilateral response. For targets in the right visual field, PO7 provided the contralateral response and PO8 the ipsilateral response.
+Within each participant, contralateral responses were averaged across left- and right-target trials, and ipsilateral responses were averaged in the same manner. An N2pc difference waveform was calculated by subtracting the ipsilateral waveform from the contralateral waveform. Participant waveforms were then averaged to obtain the grand averages. The N2pc was examined within the recommended measurement window of 200–275 ms after stimulus onset (Kappenman et al., 2021), with a negative difference indicating greater contralateral negativity.
+
+#### Epoching and N2pc analysis parameters
 ```{python}
-TMIN = -0.2 # epoch start relative to critical event
-TMAX = 1.0  # epoch end relative to critical event
+TMIN = -0.2 
+
+# epoch start relative to critical event
+
+TMAX = 0.8  
+
+# epoch end relative to critical event
 
 BASELINE = (-0.2,0) # baseline interval
 
 # critical conditions for averaging and epoching
-CONDITIONS = ["stimulus/compatible", "stimulus/incompatible"]
+CONDITIONS = [
+    "stimulus/target_left",
+    "stimulus/target_right"
+]
 
 REJECT = {
     "eeg": 150e-6,
@@ -101,29 +124,40 @@ REJECT = {
 ## Data analysis
 
 ### Preprocessing
-
-```{python}
+``` {python}
 #| eval: true # set this to false if you don't want preprocessing to recompute
 #| output: false # this suppresses any output
+raw_files = sorted(RAW_PATH.glob("*_raw.fif.gz"))
 
-for raw_file in RAW_PATH.glob("*_raw.fif.gz"):
+if not raw_files:
+    raise FileNotFoundError(f"No raw files found in {RAW_PATH.resolve()}")
 
-    # extract subject number
-    subj_ID = raw_file.stem.split("_")[0]
+for raw_file in raw_files:
+      # extract subject number
+    subj_ID = raw_file.name.split("_")[0]
+    print(f"Preprocessing participant {subj_ID}")
 
-    # read in raw file 
+  # read in raw file 
     raw = SimpleRaw(raw_file)
 
-    # preprocess raw file
-    # note how we draw on a custom preprocessing function here
-    processed = preprocess(raw, 
-                            reref_params = REFERENCE, 
-                            filter_low_cutoff = FILTER_SETTINGS["low_cutoff"], 
-                            filter_high_cutoff = FILTER_SETTINGS["high_cutoff"])
-    
-    processed.save(PROCESSED_PATH / f"{subj_ID}_raw.fif.gz", overwrite = True)
+ # preprocess raw file
+ # note how we draw on a custom preprocessing function here
+    processed = preprocess(
+        raw,
+        reref_params=REFERENCE,
+        filter_low_cutoff=FILTER_SETTINGS["low_cutoff"],
+        filter_high_cutoff=FILTER_SETTINGS["high_cutoff"]
+    )
 
+    processed.save(
+        PROCESSED_PATH / f"{subj_ID}_raw.fif.gz",
+        overwrite=True
+    )
 
+print(
+    "Processed files saved:",
+    len(list(PROCESSED_PATH.glob("*_raw.fif.gz")))
+)
 ```
 
 ### Epoching and averaging
@@ -131,69 +165,176 @@ for raw_file in RAW_PATH.glob("*_raw.fif.gz"):
 ```{python}
 #| output: false
 
-# initialise empty dictionary to hold single-subject averages
-ss_avs = {}
+# Inspect the events in one preprocessed participant file
+ss_avs = {cond: [] for cond in CONDITIONS}
 
-for cond in CONDITIONS:
-    ss_avs[cond] = []
+processed_files = sorted(PROCESSED_PATH.glob("*_raw.fif.gz"))
 
-for processed_file in PROCESSED_PATH.glob("*_raw.fif.gz"):
-    
-    # read in preprocessed file
+for processed_file in processed_files:
+    print(f"Epoching {processed_file.name}")
+
     processed = SimpleRaw(processed_file)
-
-    # extract events
     events, event_id = processed.get_events()
 
-    # epoch data
-    epochs = SimpleEpoch(processed, events, event_id, tmin = TMIN, tmax = TMAX, baseline = BASELINE, reject = REJECT)
+    epochs = SimpleEpoch(
+        processed,
+        events,
+        event_id,
+        tmin=TMIN,
+        tmax=TMAX,
+        baseline=BASELINE,
+        reject=REJECT
+    )
 
-    # subset epochs and average by condition 
     for cond in CONDITIONS:
         av = epochs[cond].average()
         ss_avs[cond].append(av)
 
+for cond in CONDITIONS:
+    print(f"{cond}: {len(ss_avs[cond])} participant averages")
+
+# Check how mini_mne exposes the averaged data
+example_av = ss_avs[CONDITIONS[0]][0]
+print("Average object type:", type(example_av))
+print("Available attributes:", [
+    name for name in dir(example_av)
+    if not name.startswith("_")
+])
 ```
 
 ### Grand average
 
 ```{python}
-#| output: false
+import numpy as np
+import matplotlib.pyplot as plt
 
-# create an empty dict to hold our grand averages
-grand_avs = {}
+left_avs = ss_avs["stimulus/target_left"]
+right_avs = ss_avs["stimulus/target_right"]
 
-for cond in CONDITIONS:
-    grand = grand_average(ss_avs[cond])
-    grand_avs[cond] = grand
+if not left_avs or len(left_avs) != len(right_avs):
+    raise ValueError("Matching left- and right-target averages are required.")
+
+contra_subjects = []
+ipsi_subjects = []
+
+for left_av, right_av in zip(left_avs, right_avs):
+    # Access the underlying MNE objects
+    left = left_av._evoked
+    right = right_av._evoked
+
+    if left_av.nave == 0 or right_av.nave == 0:
+        raise ValueError("A participant has no retained trials in one condition.")
+
+    if not np.array_equal(left.times, right.times):
+        raise ValueError("Left and right waveforms have different time points.")
+
+    # Contralateral: right electrode for left targets,
+    # and left electrode for right targets
+    contra = (
+        left.get_data(picks=["PO8"])[0]
+        + right.get_data(picks=["PO7"])[0]
+    ) / 2
+
+    # Ipsilateral: left electrode for left targets,
+    # and right electrode for right targets
+    ipsi = (
+        left.get_data(picks=["PO7"])[0]
+        + right.get_data(picks=["PO8"])[0]
+    ) / 2
+
+    contra_subjects.append(contra)
+    ipsi_subjects.append(ipsi)
+
+contra_subjects = np.stack(contra_subjects)
+ipsi_subjects = np.stack(ipsi_subjects)
+difference_subjects = contra_subjects - ipsi_subjects
+
+times = left_avs[0]._evoked.times
+
+grand_contra = contra_subjects.mean(axis=0)
+grand_ipsi = ipsi_subjects.mean(axis=0)
+grand_difference = difference_subjects.mean(axis=0)
+
+print("Participants included:", len(left_avs))
 ```
 
 ## Results
 
 ### Grand average: expected effect
 
-Plot the electrode deemed most representative for the effect by @kappenman2021.
-Set the parameters for the specified analysis window, which will include dotted vertical lines marking the analysis window on the plot.
-Note: for some components, @kappenman2021 refer to two electrode sites. If this is the case for your chosen component, the analysis requires a consideration of lateralisation; please make an appointment to discuss the required analysis tweaks with Ina.
+Figure 1 shows the grand-average contralateral and ipsilateral waveforms and their difference at PO7/PO8 across 40 participants. Following stimulus onset, the waveforms diverged at approximately 200 ms, with the contralateral response becoming less positive than the ipsilateral response. The resulting contralateral-minus-ipsilateral difference showed a negative deflection around 200–300 ms, with its largest negative amplitude occurring visually near 280 ms. Mean difference amplitude within the predefined 200–275 ms window was −0.681 µV. This pattern was consistent with the expected polarity and approximate timing of the N2pc.
+Figure 1. Grand-average N2pc at PO7/PO8.
+
+Note. Contralateral and ipsilateral responses were combined across left- and right-target trials. The black line represents the contralateral-minus-ipsilateral difference waveform. Dotted vertical lines mark the 200–275 ms measurement window. Negative amplitudes are plotted upward.
+
 
 ```{python}
-selected_electrode = "FCz"
-plot_title = "Grand average for N2: Incompatible versus compatible Flanker stimuli"
-analysis_window_start = 0.2
-analysis_window_end = 0.4
+analysis_window_start = 0.200
+analysis_window_end = 0.275
 
-plot_evokeds(grand_avs, picks = selected_electrode, invert_y = True, title = plot_title, vlines = [analysis_window_start, analysis_window_end])
+fig, ax = plt.subplots(figsize=(9, 5))
 
+# Convert volts to microvolts and seconds to milliseconds
+ax.plot(times * 1000, grand_contra * 1e6,
+        label="Contralateral")
+ax.plot(times * 1000, grand_ipsi * 1e6,
+        label="Ipsilateral")
+ax.plot(times * 1000, grand_difference * 1e6,
+        label="N2pc: contralateral − ipsilateral",
+        color="black", linewidth=2)
 
+ax.axhline(0, color="grey", linewidth=0.8)
+ax.axvline(0, color="grey", linewidth=0.8)
+
+for boundary in [analysis_window_start, analysis_window_end]:
+    ax.axvline(boundary * 1000, color="grey", linestyle=":")
+
+ax.set(
+    title="Grand-average N2pc at PO7/PO8",
+    xlabel="Time after stimulus onset (ms)",
+    ylabel="Amplitude (µV)",
+    xlim=(-200, 800)
+)
+ax.invert_yaxis()
+ax.legend()
+fig.tight_layout()
+plt.show()
+
+# Mean amplitude within the recommended measurement window
+window = (
+    (times >= analysis_window_start)
+    & (times <= analysis_window_end)
+)
+
+participant_amplitudes = difference_subjects[:, window].mean(axis=1) * 1e6
+
+print(
+    "Mean N2pc amplitude (200–275 ms): "
+    f"{participant_amplitudes.mean():.3f} µV"
+)
 ```
 
 ## Discussion and reflection
 
-Provide a brief discussion of the effect that you observed. Were you able to replicate the ERP component as observed by @kappenman2021? If not, what was different in your grand average ERP? 
+The analysis revealed a posterior contralateral negativity consistent with the N2pc described by Kappenman et al. (2021). Contralateral responses were less positive than ipsilateral responses around 200–300 ms, producing a negative difference waveform. Mean amplitude within the recommended 200–275 ms window was −0.681 µV. The largest negative deflection appeared visually near 280 ms, slightly beyond this window. Nevertheless, the observed polarity and approximate timing supported a qualitative reproduction of the characteristic N2pc pattern.
 
-What did you learn by applying the analysis process to a new dataset?
+Differences in processing and participant inclusion may explain departures from the published waveform. The present analysis included 40 participants, whereas Kappenman et al. (2021) retained 35 for their N2pc analysis after applying participant-level exclusion criteria. The supplied preprocessing function applied re-referencing and filtering, while the present workflow did not explicitly reproduce the original study’s ICA-based ocular correction, behavioural exclusions or additional eye-movement rejection procedures. These differences could affect waveform amplitude and shape. The result should therefore be interpreted as a qualitative reproduction rather than an exact replication of the original processing pipeline.
+
+Applying the analysis highlighted the importance of linking computational decisions to the component’s definition. For the N2pc, averaging a single fixed electrode would overlook how contralateral and ipsilateral assignments reverse with target location. Constructing the difference waveform also demonstrated that a negative component can emerge from two positive-going responses. This strengthened my understanding of ERP components as experimentally defined differences and reinforced the importance of matching the written Methods to the analysis actually performed.
+
 
 ## References
+Hickey, C., Di Lollo, V., & McDonald, J. J. (2009). Electrophysiological indices of target and distractor processing in visual search. Journal of Cognitive Neuroscience, 21(4), 760–775. https://doi.org/10.1162/jocn.2009.21039
 
-*Note: this document is set up to automatically generate a reference list via a bib file. We will look at how to do this in the week 9 workshop.*
+Kappenman, E. S., Farrens, J. L., Zhang, W., Stewart, A. X., & Luck, S. J. (2021). ERP CORE: An open resource for human event-related potential research. NeuroImage, 225, Article 117465. https://doi.org/10.1016/j.neuroimage.2020.117465
 
+Luck, S. J., & Hillyard, S. A. (1990). Electrophysiological evidence for parallel and serial processing during visual search. Perception & Psychophysics, 48(6), 603–617. https://doi.org/10.3758/BF03211606
+
+Luck, S. J., & Hillyard, S. A. (1994a). Electrophysiological correlates of feature analysis during visual search. Psychophysiology, 31(3), 291–308. https://doi.org/10.1111/j.1469-8986.1994.tb02218.x
+
+Luck, S. J., & Hillyard, S. A. (1994b). Spatial filtering during visual search: Evidence from human electrophysiology. Journal of Experimental Psychology: Human Perception and Performance, 20(5), 1000–1014. https://doi.org/10.1037/0096-1523.20.5.1000
+
+## Declaration of Generative AI use
+ChatGPT (OpenAI) was utilised to assist with understanding the N2pc component, adapting and troubleshooting Python code for preprocessing, lateralised averaging and plotting, and interpreting the resulting waveform. 
+
+I edited and adapted the suggested material and implemented and ran the analysis in Positron and Quarto. I take responsibility for the submitted report, including its analysis, interpretations and references.
